@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="/assets/css/login.css" />
+    <link rel="stylesheet" href="/assets/lib/layui/css/layui.css" />
+    <link rel="stylesheet" href="/assets/lib/layui/css/layui.mobile.css" />
+    <script src="/assets/lib/layui/layui.all.js"></script>
+  </head>
+  <body>
+    <!-- 版心 -->
+    <div class="layui-main">
+      <img src="/assets/images/logo.png" alt="" />
+    </div>
+    <!-- 登录和注册 -->
+    <div class="loginAndRegist">
+      <div class="title"></div>
+      <div class="art">
+        <!-- 登录框 -->
+        <form class="layui-form" action="" id="loginForm">
+          <div class="layui-form-item">
+            <i class="layui-icon layui-icon-username"></i>
+            <input
+              type="text"
+              name="username"
+              required
+              lay-verify="required"
+              placeholder="请输入用户名"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </div>
+          <div class="layui-form-item">
+            <i class="layui-icon layui-icon-password"></i>
+            <input
+              type="password"
+              name="password"
+              required
+              lay-verify="required|pass"
+              placeholder="请输入密码"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </div>
+          <div class="layui-form-item">
+            <button
+              class="layui-btn layui-btn-normal layui-btn-fluid"
+              lay-submit
+              lay-filter="formDemo"
+              id="loginBtn"
+            >
+              登录
+            </button>
+          </div>
+          <a href="javascript:;" class="goToRegist">去注册</a>
+        </form>
+        <!-- 注册框 -->
+        <form class="layui-form" action="" id="registForm">
+          <div class="layui-form-item">
+            <i class="layui-icon layui-icon-username"></i>
+            <input
+              type="text"
+              name="username"
+              required
+              lay-verify="required"
+              placeholder="请输入用户名"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </div>
+          <div class="layui-form-item">
+            <i class="layui-icon layui-icon-password"></i>
+            <input
+              type="password"
+              name="password"
+              required
+              lay-verify="required|pass"
+              placeholder="请输入密码"
+              autocomplete="off"
+              class="layui-input inputPwd"
+            />
+          </div>
+          <div class="layui-form-item">
+            <i class="layui-icon layui-icon-password"></i>
+            <input
+              type="password"
+              name="repassword"
+              required
+              lay-verify="required|pass|repass"
+              placeholder="请再次输入密码"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </div>
+          <div class="layui-form-item">
+            <button
+              class="layui-btn layui-btn-normal layui-btn-fluid"
+              lay-submit
+              lay-filter="formDemo"
+              id="registBtn"
+            >
+              点击提交
+            </button>
+          </div>
+          <a href="javascript:;" class="goToLogin">去登录</a>
+        </form>
+      </div>
+    </div>
+    <script src="/assets/lib/jquery.js"></script>
+    <script>
+      // 校验规则
+      let form = layui.form;
+      var layer = layui.layer;
+      form.verify({
+        //我们既支持上述函数式的方式，也支持下述数组的形式
+        //数组的两个值分别代表：[正则匹配、匹配不符时的提示文字]
+        pass: [/^[\S]{6,12}$/, '密码必须6到12位，且不能出现空格'],
+        repass: function (value, item) {
+          if (value !== $('.inputPwd').val()) {
+            return '两次输入密码不一致';
+          }
+        }
+      });
+      // 在每次发送ajax请求前,将ajax请求的url地址前加上根路径
+      $.ajaxPrefilter(function (options) {
+        options.url = 'http://ajax.frontend.itheima.net' + options.url;
+      });
+      // 去注册
+      $('.goToRegist').on('click', function () {
+        $('#loginForm').hide();
+        $('#registForm').show();
+      });
+
+      // 去登录
+      $('.goToLogin').on('click', function () {
+        $('#loginForm').show();
+        $('#registForm').hide();
+      });
+
+      // 点击注册按钮
+      $('#registForm').on('submit', function (e) {
+        e.preventDefault();
+        let str = $(this).serialize();
+        console.log(str);
+        $.ajax({
+          url: '/api/reguser',
+          type: 'POST',
+          data: str,
+          success: function (res) {
+            console.log(res);
+            // 若系统返回状态值是0,表示注册成功
+            if (res.status === 0) {
+              layer.msg(
+                res.message,
+                {
+                  time: 2500 //2秒关闭（如果不配置，默认是3秒）
+                },
+                function () {
+                  // 将注册框清空
+                  $('#registForm')[0].reset();
+                  // 并返回登录框
+                  $('.goToLogin').click();
+                }
+              );
+              // 若系统返回状态值是1,表示重名
+            } else {
+              layer.msg(res.message, {
+                time: 1500 //2秒关闭（如果不配置，默认是3秒）
+              });
+            }
+          }
+        });
+      });
+
+      // 点击登录按钮
+      $('#loginForm').on('submit', function (e) {
+        e.preventDefault();
+        let str = $(this).serialize();
+        console.log(str);
+        $.ajax({
+          url: '/api/login',
+          type: 'POST',
+          data: str,
+          success: function (res) {
+            console.log(res);
+            // 如果系统返回状态值是0,表示登录成功
+            if (res.status === 0) {
+              layer.msg(
+                res.message,
+                {
+                  time: 1500 //2秒关闭（如果不配置，默认是3秒）
+                },
+                function () {
+                  location.href = 'http://127.0.0.1:5500/home/index.html';
+                  // location.href = 'https://www.baidu.com/';
+                }
+              );
+              // 若系统返回状态值是1,表示登录失败
+            } else {
+              layer.msg(res.message, {
+                time: 1500 //2秒关闭（如果不配置，默认是3秒）
+              });
+            }
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
