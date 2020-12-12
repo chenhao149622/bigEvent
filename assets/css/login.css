@@ -41,7 +41,7 @@ a {
 .layui-form-item {
   position: relative;
 }
-i {
+#icon {
   left: 2%;
   top: 50%;
   transform: translatey(-50%);
