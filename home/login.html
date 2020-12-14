@@ -112,7 +112,10 @@
     <script>
       // 校验规则
       let form = layui.form;
+
+      // 弹出层
       var layer = layui.layer;
+
       form.verify({
         //我们既支持上述函数式的方式，也支持下述数组的形式
         //数组的两个值分别代表：[正则匹配、匹配不符时的提示文字]
@@ -185,8 +188,12 @@
           data: str,
           success: function (res) {
             console.log(res);
+            console.log(res.token);
+            localStorage.setItem('token', res.token);
+            console.log(localStorage.getItem('token'));
             // 如果系统返回状态值是0,表示登录成功
             if (res.status === 0) {
+              // 弹出层
               layer.msg(
                 res.message,
                 {
