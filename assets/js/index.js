@@ -29,9 +29,9 @@ function getUserInfi() {
       $('.userInfoName').text(UIF);
     },
     complete: function (x) {
-      console.log(x);
-      console.log(x.responseJSON.status);
-      console.log(x.responseJSON.message);
+      // console.log(x);
+      // console.log(x.responseJSON.status);
+      // console.log(x.responseJSON.message);
       if (x.responseJSON.status !== 0 || x.responseJSON.message == '身份认证成功!') {
         console.log('失败了');
         localStorage.removeItem('token');
